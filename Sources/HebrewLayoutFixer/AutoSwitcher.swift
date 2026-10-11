@@ -51,9 +51,11 @@ final class AutoSwitcher {
 
     func start() {
         guard tap == nil else { return }
-        if installTap() { return }
-        // Usually means the permission isn't granted yet — keep trying quietly.
+        if AXIsProcessTrusted(), installTap() { return }
+        // Wait for the permission without calling tapCreate meanwhile: an event tap
+        // requested while untrusted can make macOS show its permission prompt again.
         retryTimer = Timer.scheduledTimer(withTimeInterval: 3, repeats: true) { [weak self] timer in
+            guard AXIsProcessTrusted() else { return }
             if self?.installTap() == true { timer.invalidate() }
         }
     }
