@@ -32,8 +32,16 @@ mkdir -p "${APP_BUNDLE}/Contents/Resources"
 cp "$BIN_PATH" "${APP_BUNDLE}/Contents/MacOS/${APP_NAME}"
 cp "Info.plist" "${APP_BUNDLE}/Contents/Info.plist"
 
-echo "==> Ad-hoc signing…"
-codesign --force --deep --sign - "$APP_BUNDLE"
+# A stable identity (scripts/create-signing-cert.sh) keeps the Accessibility
+# permission across rebuilds; an ad-hoc signature changes every build.
+IDENTITY="HebrewLayoutFixer Local Signing"
+if security find-identity -v -p codesigning | grep -q "$IDENTITY"; then
+    echo "==> Signing with \"$IDENTITY\"…"
+    codesign --force --deep --sign "$IDENTITY" "$APP_BUNDLE"
+else
+    echo "==> Ad-hoc signing (run scripts/create-signing-cert.sh once to keep permissions across rebuilds)…"
+    codesign --force --deep --sign - "$APP_BUNDLE"
+fi
 
 echo "==> Done: $(pwd)/${APP_BUNDLE}"
 echo "העתק/י אותו לתיקיית Applications והרץ/י. בהפעלה ראשונה תתבקש/י לאשר הרשאת נגישות."
