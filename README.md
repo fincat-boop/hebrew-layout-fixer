@@ -54,8 +54,17 @@ cd hebrew-layout-fixer
 
 ### אחרי עדכון
 
-כל בנייה מחדש מקבלת חתימה חדשה, ו-macOS מבטל את הרשאת הנגישות. ברשימת הנגישות
-מסירים את "מתקן שפה" (−) ומוסיפים מחדש (+).
+כברירת מחדל כל בנייה מקבלת חתימה חדשה, ו-macOS מבטל את הרשאת הנגישות: ברשימת
+הנגישות מסירים את "מתקן שפה" (−) ומוסיפים מחדש (+).
+
+כדי שזה לא יקרה, מריצים פעם אחת לפני הבנייה:
+
+```bash
+./scripts/create-signing-cert.sh
+```
+
+הסקריפט יוצר תעודת חתימה מקומית במחזיק המפתחות (macOS יבקש סיסמה). מעכשיו
+`build_app.sh` חותם איתה, וההרשאה נשמרת גם אחרי עדכונים. התעודה לא יוצאת מהמחשב.
 
 ## דרישות
 
@@ -102,7 +111,10 @@ Accessibility) to read keystrokes and replace text in other apps.
 
 Then move `HebrewLayoutFixer.app` to Applications. The app is ad-hoc signed (not notarized). For a
 downloaded build, use System Settings → Privacy & Security → "Open Anyway". After each
-rebuild, remove and re-add the app in the Accessibility list.
+rebuild, remove and re-add the app in the Accessibility list — or run
+`./scripts/create-signing-cert.sh` once before building: it creates a local
+self-signed code-signing identity, `build_app.sh` signs with it, and the
+permission survives rebuilds.
 
 **Requirements.** macOS 12+, with the "Hebrew" and "ABC" (or U.S.) input sources enabled.
 
