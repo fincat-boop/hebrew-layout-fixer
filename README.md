@@ -40,7 +40,7 @@
 צריך Xcode או Command Line Tools (`xcode-select --install`).
 
 ```bash
-git clone <כתובת הריפו>
+git clone https://github.com/fincat-boop/hebrew-layout-fixer.git
 cd hebrew-layout-fixer
 ./build_app.sh
 ```
